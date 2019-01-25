@@ -6,7 +6,15 @@ import java.util.concurrent.Future;
 
 public class MyClass {
 
-  public Future<String> calculateAsync(String message) {
+  public Future<String> exampleWithCompletableFuture(String message) {
+    CompletableFuture<String> completableFuture = new CompletableFuture<>();
+
+    completableFuture.complete(message);
+
+    return completableFuture;
+  }
+
+  public Future<String> exampleWithCompletableFutureInAnotherThread(String message) {
     CompletableFuture<String> completableFuture = new CompletableFuture<>();
 
     executeFutureInAnotherThread(message, completableFuture);

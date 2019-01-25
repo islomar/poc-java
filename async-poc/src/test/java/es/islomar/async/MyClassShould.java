@@ -22,7 +22,15 @@ public class MyClassShould {
     public void try_complete_completablefuture() throws Exception {
         final MyClass myClass = new MyClass();
 
-        final Future<String> stringFuture = myClass.calculateAsync("Hello");
+        final Future<String> stringFuture = myClass.exampleWithCompletableFuture("Hello");
+
+        assertThat(stringFuture.get(), is("Hello"));
+    }
+
+    public void try_complete_completablefuture_within_another_tread() throws Exception {
+        final MyClass myClass = new MyClass();
+
+        final Future<String> stringFuture = myClass.exampleWithCompletableFutureInAnotherThread("Hello");
 
         assertThat(stringFuture.get(), is("Hello"));
     }
