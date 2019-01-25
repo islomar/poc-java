@@ -10,6 +10,7 @@ Java 11
     
 ## Resources
 * https://www.baeldung.com/java-completablefuture
+* https://www.callicoder.com/java-8-completablefuture-tutorial/
 
     
 ## Some notes

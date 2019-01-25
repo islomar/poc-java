@@ -6,6 +6,13 @@ import java.util.concurrent.Future;
 
 public class MyAsyncPoC {
 
+  private final MyCollaborator myCollaborator;
+
+  public MyAsyncPoC(final MyCollaborator myCollaborator) {
+
+    this.myCollaborator = myCollaborator;
+  }
+
   public Future<String> exampleWithCompletableFuture(String message) {
     CompletableFuture<String> completableFuture = new CompletableFuture<>();
 
@@ -43,4 +50,7 @@ public class MyAsyncPoC {
     });
   }
 
+  public void execute() {
+    this.myCollaborator.doStuff();
+  }
 }
