@@ -13,13 +13,16 @@ Java 11
 
     
 ## Some notes
-* The Future interface was added in Java 5
-* In Java 8, the CompletableFuture class was introduced
-    - It implements both Future and CompletableStage
-* CompletableStage
+* The `Future` interface was added in Java 5
+* In Java 8, the `CompletableFuture` class was introduced
+    - It implements both Future` and `CompletableStage`
+* `CompletableStage
     - defines the contract for an asynchronous computation step that can be combined with other steps.
+* Static methods `runAsync()` and `supplyAsync()` allow us to create a CompletableFuture instance
+ out of Runnable and Supplier functional types correspondingly.
+* The `Supplier` interface is a generic functional interface with a single method that has no arguments and returns a value of a parameterized type.
 
-    
+
 ## To Do
 * CompletableFuture<Void>
 * CompletableFuture.supplyAsync()

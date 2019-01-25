@@ -4,7 +4,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class MyClass {
+public class MyAsyncPoC {
 
   public Future<String> exampleWithCompletableFuture(String message) {
     CompletableFuture<String> completableFuture = new CompletableFuture<>();
