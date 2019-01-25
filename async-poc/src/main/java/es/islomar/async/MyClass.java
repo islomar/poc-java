@@ -22,6 +22,18 @@ public class MyClass {
     return completableFuture;
   }
 
+  public Future<String> calculateAsyncWithCancellation() {
+    CompletableFuture<String> completableFuture = new CompletableFuture<>();
+
+    Executors.newCachedThreadPool().submit(() -> {
+      Thread.sleep(500);
+      completableFuture.cancel(false);
+      return null;
+    });
+
+    return completableFuture;
+  }
+
   private void executeFutureInAnotherThread(final String message,
                                             final CompletableFuture<String> completableFuture) {
     Executors.newCachedThreadPool().submit(() -> {
