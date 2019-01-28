@@ -14,7 +14,8 @@ Java 11
 
     
 ## Some notes
-* The `Future` interface was added in Java 5
+* The `Future` interface was added in Java 5: it provides a referenceto its result that will be 
+available when the computation itself is completed.
 * In Java 8, the `CompletableFuture` class was introduced
     - It implements both Future` and `CompletableStage`
 * `CompletableStage

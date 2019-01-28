@@ -7,10 +7,15 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -83,5 +88,27 @@ public class MyAsyncPoCShould {
     // future.get();
 
     verify(myCollaborator).doStuff();
+  }
+
+  @Test
+  public void pre_java8_future() {
+    int timeoutInMilliseconds = 1000;
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    final Future<String> future = executor.submit(
+        () -> doSomeLongComputation(timeoutInMilliseconds * 2));
+
+    doSomethingElseWhileTheAsyncOperationIsProgressing();
+
+    assertThrows(TimeoutException.class, () -> future.get(timeoutInMilliseconds, TimeUnit.MILLISECONDS));
+  }
+
+  private void doSomethingElseWhileTheAsyncOperationIsProgressing() {
+    System.out.println("We finished!!");
+  }
+
+  private String doSomeLongComputation(int timeoutInMilliseconds) throws InterruptedException {
+    //Sleeping longer than the timeout configured in the Future will throw a TimeoutException
+    Thread.sleep(timeoutInMilliseconds);
+    return "Hello world";
   }
 }
