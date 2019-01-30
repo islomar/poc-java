@@ -72,8 +72,7 @@ public class MyAsyncPoCShould {
   }
 
   @Test
-  public void create_compleatefuture_out_of_runnable()
-      throws ExecutionException, InterruptedException {
+  public void create_compleatefuture_out_of_runnable() {
     doNothing().when(this.myCollaborator).doStuff();
     // runAsync() create a CompletableFuture instance out of Runnable functional type
     CompletableFuture<Void> future = CompletableFuture.runAsync(() -> this.myAsyncPoC.execute());

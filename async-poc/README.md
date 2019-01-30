@@ -22,6 +22,8 @@ available when the computation itself is completed.
     completing a Future, etc.
 * In Java 8, the `CompletableFuture` class was introduced
     - It implements both Future` and `CompletableStage`
+    - `supplyAsync()` get a Supplier which will be run by one of the Executors in the 
+    ForkJoinPooll (but you can pass a different one)
 * `CompletableStage
     - defines the contract for an asynchronous computation step that can be combined with other steps.
 * Static methods `runAsync()` and `supplyAsync()` allow us to create a CompletableFuture instance

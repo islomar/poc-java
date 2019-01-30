@@ -37,12 +37,6 @@ public class Shop {
     new Thread(
             () -> {
               try {
-                if (this.shouldThrowShopException) {
-                  throw new ShopException("Something bad happened!");
-                }
-                if (this.shouldThrowRuntimeException) {
-                  throw new RuntimeException("Unexpected error!");
-                }
                 if (this.shouldCancel) {
                   futurePrice.cancel(true);
                   return;
@@ -61,7 +55,22 @@ public class Shop {
     return futurePrice;
   }
 
+  public Future<Double> getPriceWithSupplyAsync(String product) {
+    CompletableFuture<Double> futurePrice =
+        CompletableFuture.supplyAsync(() -> calculatePrice(product));
+    if (this.shouldCancel) {
+      futurePrice.cancel(true);
+    }
+    return futurePrice;
+  }
+
   private double calculatePrice(String product) {
+    if (this.shouldThrowShopException) {
+      throw new ShopException("Something bad happened!");
+    }
+    if (this.shouldThrowRuntimeException) {
+      throw new RuntimeException("Unexpected error!");
+    }
     delay();
     Random random = new Random();
     return random.nextDouble() * product.charAt(0) + product.charAt(1);
