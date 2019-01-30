@@ -14,12 +14,25 @@ public class Shop {
   private boolean shouldCancel;
   private boolean shouldThrowShopException;
   private boolean shouldThrowRuntimeException;
+  // We need more shops than cores in our CPU for seeing the effect of parallel streams
   private static final List<Shop> ALL_SHOPS =
       Arrays.asList(
           new Shop("BestPrices"),
           new Shop("LetsSaveBig"),
           new Shop("MyFavoriteShop"),
-          new Shop("BuyItAll"));
+          new Shop("BuyItAll"),
+          new Shop("BestPrices"),
+          new Shop("LetsSaveBig"),
+          new Shop("MyFavoriteShop"),
+          new Shop("BestPrices"),
+          new Shop("LetsSaveBig"),
+          new Shop("MyFavoriteShop"),
+          new Shop("BestPrices"),
+          new Shop("LetsSaveBig"),
+          new Shop("MyFavoriteShop"),
+          new Shop("BestPrices"),
+          new Shop("LetsSaveBig"),
+          new Shop("MyFavoriteShop"));
 
   public Shop(String name) {
     this.name = name;
@@ -115,6 +128,7 @@ public class Shop {
       throw new RuntimeException("Unexpected error!");
     }
     delay();
+    System.out.println("Calculated price for " + product);
     Random random = new Random();
     return random.nextDouble() * product.charAt(0) + product.charAt(1);
   }

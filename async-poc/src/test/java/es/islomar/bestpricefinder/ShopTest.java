@@ -74,6 +74,7 @@ public class ShopTest {
 
   @Test
   // Running with regular streams will take n times the calculation of one product
+  // This is a very slow test to run
   public void run_action_in_synchronous_way() {
     Shop shop = new Shop("BestPrice");
     long start = System.nanoTime();
