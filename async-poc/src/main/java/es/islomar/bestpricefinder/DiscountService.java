@@ -3,7 +3,7 @@ package es.islomar.bestpricefinder;
 import static es.islomar.bestpricefinder.Util.delay;
 import static es.islomar.bestpricefinder.Util.format;
 
-public class Discount {
+public class DiscountService {
 
   public enum Code {
     NONE(0),
@@ -17,14 +17,14 @@ public class Discount {
     Code(int percentage) {
       this.percentage = percentage;
     }
+  }
 
-    public static String applyDiscount(Quote quote) {
-      return quote.getShopName() + " price is " + apply(quote.getPrice(), quote.getDiscountCode());
-    }
+  public static String applyDiscount(Quote quote) {
+    return quote.getShopName() + " price is " + apply(quote.getPrice(), quote.getDiscountCode());
+  }
 
-    private static double apply(double price, Code code) {
-      delay();
-      return format(price * (100 - code.percentage) / 100);
-    }
+  private static double apply(double price, Code code) {
+    delay();
+    return format(price * (100 - code.percentage) / 100);
   }
 }
