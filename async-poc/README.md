@@ -23,7 +23,15 @@ available when the computation itself is completed.
 * In Java 8, the `CompletableFuture` class was introduced
     - It implements both Future` and `CompletableStage`
     - `supplyAsync()` get a Supplier which will be run by one of the Executors in the 
-    ForkJoinPooll (but you can pass a different one)
+    ForkJoinPool (but you can pass a different one)
+    - You can parallelize in 2 different ways:
+        - Parallel streams + map: more efficient when doing compuation-heavy operations with no 
+        I/O (if all threads are compute-bound, then there's no point in having more threads than 
+        processor cores)
+        - Streams + ComputableFuture: better when your parallel units of work involve waiting for
+         I/O (including network connections). CompletableFuture gives more flexibility to match 
+         the number of threads to the wait/computer. Plus, the laziness of streams can make it 
+         harder to reason about when the waits actually happen.
 * `CompletableStage
     - defines the contract for an asynchronous computation step that can be combined with other steps.
 * Static methods `runAsync()` and `supplyAsync()` allow us to create a CompletableFuture instance
