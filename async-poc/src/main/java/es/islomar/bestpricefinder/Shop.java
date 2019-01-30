@@ -43,8 +43,6 @@ public class Shop {
                 }
                 double price = calculatePrice(product);
                 futurePrice.complete(price);
-              } catch (ShopException ex) {
-                futurePrice.completeExceptionally(ex);
               } catch (Exception ex) {
                 // It makes no sense to manually throw an exception here: completeExceptionally()
                 // does it (ExecutionException)
