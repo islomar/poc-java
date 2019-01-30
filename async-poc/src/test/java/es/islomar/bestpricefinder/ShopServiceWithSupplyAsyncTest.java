@@ -17,7 +17,7 @@ public class ShopServiceWithSupplyAsyncTest {
   public void when_action_gets_completed_then_future_is_done()
       throws ExecutionException, InterruptedException {
     // Query the shopService to retrieve the price of a product
-    ShopService shopService = new ShopService("BestShop");
+    ShopService shopService = new ShopService();
     long start = System.nanoTime();
     Future<Double> futurePrice = shopService.getPriceWithSupplyAsync("myPhone");
     logInvocationTime(start, "Invocation returned after ");
@@ -33,7 +33,7 @@ public class ShopServiceWithSupplyAsyncTest {
   @Test
   public void
       when_action_completes_exceptionally_then_ExecutionException_is_thrown_and_future_is_done_but_not_cancelled() {
-    ShopService shopService = new ShopService("BestShop");
+    ShopService shopService = new ShopService();
     shopService.shouldThrowShopException();
     Future<Double> futurePrice = shopService.getPriceWithSupplyAsync("myPhone");
 
@@ -48,7 +48,7 @@ public class ShopServiceWithSupplyAsyncTest {
   @Test
   public void
       when_action_gets_cancelled_then_CancellationException_is_thrown_and_future_is_done_and_cancelled() {
-    ShopService shopService = new ShopService("BestShop");
+    ShopService shopService = new ShopService();
     shopService.shouldCancel();
     Future<Double> futurePrice = shopService.getPriceWithSupplyAsync("myPhone");
 
@@ -60,7 +60,7 @@ public class ShopServiceWithSupplyAsyncTest {
 
   @Test
   public void when_action_throws_RuntimeException_then_ExecutionException_is_thrown() {
-    ShopService shopService = new ShopService("BestShop");
+    ShopService shopService = new ShopService();
     shopService.shouldThrowRuntimeException();
     Future<Double> futurePrice = shopService.getPriceWithSupplyAsync("myPhone");
 

@@ -8,23 +8,14 @@ import java.util.concurrent.Future;
 
 public class ShopService {
 
-  private final String shopName;
   private boolean shouldCancel;
   private boolean shouldThrowShopException;
   private boolean shouldThrowRuntimeException;
 
-  public ShopService(String shopName) {
-    this.shopName = shopName;
-  }
-
-  public String getShopName() {
-    return this.shopName;
-  }
-
-  public String getPrice(String product) {
+  public String getPrice(String product, Shop shop) {
     double price = calculatePrice(product);
     DiscountCode code = DiscountCode.values()[new Random().nextInt(DiscountCode.values().length)];
-    return this.shopName + ":" + price + ":" + code;
+    return shop.getName() + ":" + price + ":" + code;
   }
 
   public void shouldThrowShopException() {

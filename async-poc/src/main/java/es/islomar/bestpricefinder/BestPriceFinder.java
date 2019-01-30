@@ -11,24 +11,24 @@ import java.util.concurrent.Executors;
 public class BestPriceFinder {
 
   // We need more shops than cores in our CPU for seeing the effect of parallel streams
-  private static final List<ShopService> ALL_SHOPS =
+  private static final List<Shop> ALL_SHOPS =
       Arrays.asList(
-          new ShopService("BestPrices"),
-          new ShopService("LetsSaveBig"),
-          new ShopService("MyFavoriteShop"),
-          new ShopService("BuyItAll"),
-          new ShopService("BestPrices"),
-          new ShopService("LetsSaveBig"),
-          new ShopService("MyFavoriteShop"),
-          new ShopService("BestPrices"),
-          new ShopService("LetsSaveBig"),
-          new ShopService("MyFavoriteShop"),
-          new ShopService("BestPrices"),
-          new ShopService("LetsSaveBig"),
-          new ShopService("MyFavoriteShop"),
-          new ShopService("BestPrices"),
-          new ShopService("LetsSaveBig"),
-          new ShopService("MyFavoriteShop"));
+          new Shop("BestPrices"),
+          new Shop("LetsSaveBig"),
+          new Shop("MyFavoriteShop"),
+          new Shop("BuyItAll"),
+          new Shop("BestPrices"),
+          new Shop("LetsSaveBig"),
+          new Shop("MyFavoriteShop"),
+          new Shop("BestPrices"),
+          new Shop("LetsSaveBig"),
+          new Shop("MyFavoriteShop"),
+          new Shop("BestPrices"),
+          new Shop("LetsSaveBig"),
+          new Shop("MyFavoriteShop"),
+          new Shop("BestPrices"),
+          new Shop("LetsSaveBig"),
+          new Shop("MyFavoriteShop"));
 
   // using daemon threads does not prevent the termination of the program
   // no difference for the performance
@@ -40,14 +40,19 @@ public class BestPriceFinder {
             t.setDaemon(true);
             return t;
           });
+  private final ShopService shopService;
+
+  public BestPriceFinder() {
+    this.shopService = new ShopService();
+  }
 
   public List<String> findPrices(String product) {
     return ALL_SHOPS
         .stream()
         .map(
-            shopService ->
+            shop ->
                 String.format(
-                    "%s price is %s", shopService.getShopName(), shopService.getPrice(product)))
+                    "%s price is %s", shop.getName(), this.shopService.getPrice(product, shop)))
         .collect(toList());
   }
 
@@ -55,9 +60,9 @@ public class BestPriceFinder {
     return ALL_SHOPS
         .parallelStream()
         .map(
-            shopService ->
+            shop ->
                 String.format(
-                    "%s price is %s", shopService.getShopName(), shopService.getPrice(product)))
+                    "%s price is %s", shop.getName(), this.shopService.getPrice(product, shop)))
         .collect(toList());
   }
 
@@ -67,12 +72,12 @@ public class BestPriceFinder {
         ALL_SHOPS
             .stream()
             .map(
-                shopService ->
+                shop ->
                     CompletableFuture.supplyAsync(
                         () ->
                             String.format(
                                 "%s price is %s",
-                                shopService.getShopName(), shopService.getPrice(product))))
+                                shop.getName(), this.shopService.getPrice(product, shop))))
             .collect(toList());
 
     // Wait for the completion of all asynchronous operations
@@ -85,12 +90,12 @@ public class BestPriceFinder {
         ALL_SHOPS
             .stream()
             .map(
-                shopService ->
+                shop ->
                     CompletableFuture.supplyAsync(
                         () ->
                             String.format(
                                 "%s price is %s",
-                                shopService.getShopName(), shopService.getPrice(product)),
+                                shop.getName(), this.shopService.getPrice(product, shop)),
                         EXECUTOR))
             .collect(toList());
 
@@ -101,7 +106,7 @@ public class BestPriceFinder {
   public List<String> findPricesWithDiscounts(String product) {
     return ALL_SHOPS
         .stream()
-        .map(shopService -> shopService.getPrice(product))
+        .map(shop -> this.shopService.getPrice(product, shop))
         .map(Quote::parse)
         .map(DiscountService::applyDiscount)
         .collect(toList());
