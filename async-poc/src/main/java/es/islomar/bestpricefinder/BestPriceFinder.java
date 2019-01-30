@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.stream.Stream;
 
 public class BestPriceFinder {
 
@@ -41,9 +42,11 @@ public class BestPriceFinder {
             return t;
           });
   private final ShopService shopService;
+  private ExchangeService exchangeService;
 
   public BestPriceFinder() {
     this.shopService = new ShopService();
+    this.exchangeService = new ExchangeService();
   }
 
   public List<String> findPricesSequential(String product) {
@@ -52,7 +55,8 @@ public class BestPriceFinder {
         .map(
             shop ->
                 String.format(
-                    "%s price is %s", shop.getName(), this.shopService.getPrice(product, shop)))
+                    "%s price is %s",
+                    shop.getName(), this.shopService.getPriceWithDiscount(product, shop)))
         .collect(toList());
   }
 
@@ -62,7 +66,8 @@ public class BestPriceFinder {
         .map(
             shop ->
                 String.format(
-                    "%s price is %s", shop.getName(), this.shopService.getPrice(product, shop)))
+                    "%s price is %s",
+                    shop.getName(), this.shopService.getPriceWithDiscount(product, shop)))
         .collect(toList());
   }
 
@@ -77,7 +82,8 @@ public class BestPriceFinder {
                         () ->
                             String.format(
                                 "%s price is %s",
-                                shop.getName(), this.shopService.getPrice(product, shop))))
+                                shop.getName(),
+                                this.shopService.getPriceWithDiscount(product, shop))))
             .collect(toList());
 
     // Wait for the completion of all asynchronous operations
@@ -95,7 +101,8 @@ public class BestPriceFinder {
                         () ->
                             String.format(
                                 "%s price is %s",
-                                shop.getName(), this.shopService.getPrice(product, shop)),
+                                shop.getName(),
+                                this.shopService.getPriceWithDiscount(product, shop)),
                         EXECUTOR))
             .collect(toList());
 
@@ -106,12 +113,16 @@ public class BestPriceFinder {
   public List<String> syncFindPricesWithDiscounts(String product) {
     return ALL_SHOPS
         .stream()
-        .map(shop -> this.shopService.getPrice(product, shop))
+        .map(shop -> this.shopService.getPriceWithDiscount(product, shop))
         .map(Quote::parse)
         .map(DiscountService::applyDiscount)
         .collect(toList());
   }
 
+  /**
+   * thenApply() does not block the code until the CompletableFuture on which we''e invoking it is
+   * completed
+   */
   public List<String> asyncFindPricesWithDiscounts(String product) {
     List<CompletableFuture<String>> priceFutures =
         ALL_SHOPS
@@ -119,7 +130,7 @@ public class BestPriceFinder {
             .map(
                 shop ->
                     CompletableFuture.supplyAsync(
-                        () -> this.shopService.getPrice(product, shop), EXECUTOR))
+                        () -> this.shopService.getPriceWithDiscount(product, shop), EXECUTOR))
             .map(future -> future.thenApply(Quote::parse))
             .map(
                 future ->
@@ -130,5 +141,22 @@ public class BestPriceFinder {
             .collect(toList());
 
     return priceFutures.stream().map(CompletableFuture::join).collect(toList());
+  }
+
+  public List<Double> futurePriceInUSD(String product) {
+    Stream<CompletableFuture<Double>> futurePricesInUSD =
+        ALL_SHOPS
+            .stream()
+            .map(
+                shop ->
+                    CompletableFuture.supplyAsync(() -> this.shopService.getPrice(product))
+                        .thenCombine(
+                            CompletableFuture.supplyAsync(
+                                () ->
+                                    this.exchangeService.getRate(
+                                        ExchangeService.Money.EUR, ExchangeService.Money.USD)),
+                            (price, rate) -> price * rate));
+
+    return futurePricesInUSD.map(CompletableFuture::join).collect(toList());
   }
 }

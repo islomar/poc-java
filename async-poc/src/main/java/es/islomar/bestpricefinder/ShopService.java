@@ -12,9 +12,13 @@ public class ShopService {
   private boolean shouldThrowShopException;
   private boolean shouldThrowRuntimeException;
 
-  public String getPrice(String product, Shop shop) {
+  public String getPriceWithDiscount(String product, Shop shop) {
     double price = calculatePrice(product);
     return shop.getName() + ":" + price + ":" + shop.getDiscountCode();
+  }
+
+  public double getPrice(String product) {
+    return calculatePrice(product);
   }
 
   public void shouldThrowShopException() {

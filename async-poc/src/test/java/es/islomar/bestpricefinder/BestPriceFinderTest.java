@@ -27,7 +27,7 @@ public class BestPriceFinderTest {
 
   @Test
   // Running with parallel streams will only take the time of one calculation
-  // Since we are using more shops than cores (14 shops vs 12 cores)
+  // Since we are using more shops than cores (16 shops vs 12 cores)
   public void run_action_in_synchronous_way_with_parallel_streams() {
     long start = System.nanoTime();
 
@@ -39,7 +39,7 @@ public class BestPriceFinderTest {
 
   @Test
   // Running with parallel streams will only take the time of two calculations,
-  // Since we are using more shops than cores (14 shops vs 12 cores)
+  // Since we are using more shops than cores (16 shops vs 12 cores)
   public void run_action_with_async_streams() {
     long start = System.nanoTime();
 
@@ -78,6 +78,16 @@ public class BestPriceFinderTest {
     long start = System.nanoTime();
 
     this.bestPriceFinder.asyncFindPricesWithDiscounts(ANY_PRODUCT);
+
+    long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
+    System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
+  }
+
+  @Test
+  public void combine_results_from_several_services() {
+    long start = System.nanoTime();
+
+    this.bestPriceFinder.futurePriceInUSD(ANY_PRODUCT);
 
     long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
     System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));

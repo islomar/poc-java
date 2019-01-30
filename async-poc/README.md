@@ -32,6 +32,13 @@ available when the computation itself is completed.
          I/O (including network connections). CompletableFuture gives more flexibility to match 
          the number of threads to the wait/computer. Plus, the laziness of streams can make it 
          harder to reason about when the waits actually happen.
+     - `thenCompose()`: pipeline two asynchronous operations. It executes the task in the same 
+     Thread than the previous task.
+     - `thenCompseAsync()`: it executes the task in a different Thread than the previous task, it
+      submits the task to the thread pool (each task can be handled by a different thread).
+     - `join()` to wait for all the async tasks to complete.
+     - `thenCombine()`: to combine two independent async calculations. It also exists a 
+     `thenCombineAsync()` version.
 * `CompletableStage
     - defines the contract for an asynchronous computation step that can be combined with other steps.
 * Static methods `runAsync()` and `supplyAsync()` allow us to create a CompletableFuture instance
@@ -45,3 +52,6 @@ available when the computation itself is completed.
 * CompletableFuture.supplyAsync()
 * Function<Throwable, CompletableFuture<T>>
 * exceptionally()
+
+## Doubts
+* Apollo, Executors and async Java...
