@@ -1,7 +1,6 @@
 package es.islomar.bestpricefinder;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class BestPriceFinderTest {
@@ -63,8 +62,14 @@ public class BestPriceFinderTest {
   }
 
   @Test
-  @Disabled
-  public void when_xxx_then_xxx() {
+  // This implementation is very slow: it calls first one service (for each shop) and then another
+  // service
+  public void synchronously_find_prices_with_discounts_in_a_pipeline_way() {
+    long start = System.nanoTime();
+
     this.bestPriceFinder.findPricesWithDiscounts(ANY_PRODUCT);
+
+    long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
+    System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
   }
 }
