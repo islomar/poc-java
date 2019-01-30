@@ -46,7 +46,7 @@ public class BestPriceFinder {
     this.shopService = new ShopService();
   }
 
-  public List<String> findPrices(String product) {
+  public List<String> findPricesSequential(String product) {
     return ALL_SHOPS
         .stream()
         .map(
@@ -56,7 +56,7 @@ public class BestPriceFinder {
         .collect(toList());
   }
 
-  public List<String> findPricesWithParallelStreams(String product) {
+  public List<String> findPricesWithParallel(String product) {
     return ALL_SHOPS
         .parallelStream()
         .map(
@@ -103,12 +103,32 @@ public class BestPriceFinder {
     return priceFutures.stream().map(CompletableFuture::join).collect(toList());
   }
 
-  public List<String> findPricesWithDiscounts(String product) {
+  public List<String> syncFindPricesWithDiscounts(String product) {
     return ALL_SHOPS
         .stream()
         .map(shop -> this.shopService.getPrice(product, shop))
         .map(Quote::parse)
         .map(DiscountService::applyDiscount)
         .collect(toList());
+  }
+
+  public List<String> asyncFindPricesWithDiscounts(String product) {
+    List<CompletableFuture<String>> priceFutures =
+        ALL_SHOPS
+            .stream()
+            .map(
+                shop ->
+                    CompletableFuture.supplyAsync(
+                        () -> this.shopService.getPrice(product, shop), EXECUTOR))
+            .map(future -> future.thenApply(Quote::parse))
+            .map(
+                future ->
+                    future.thenCompose(
+                        quote ->
+                            CompletableFuture.supplyAsync(
+                                () -> DiscountService.applyDiscount(quote), EXECUTOR)))
+            .collect(toList());
+
+    return priceFutures.stream().map(CompletableFuture::join).collect(toList());
   }
 }

@@ -19,7 +19,7 @@ public class BestPriceFinderTest {
   public void run_action_in_synchronous_way() {
     long start = System.nanoTime();
 
-    this.bestPriceFinder.findPrices(ANY_PRODUCT);
+    this.bestPriceFinder.findPricesSequential(ANY_PRODUCT);
 
     long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
     System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
@@ -31,7 +31,7 @@ public class BestPriceFinderTest {
   public void run_action_in_synchronous_way_with_parallel_streams() {
     long start = System.nanoTime();
 
-    this.bestPriceFinder.findPricesWithParallelStreams(ANY_PRODUCT);
+    this.bestPriceFinder.findPricesWithParallel(ANY_PRODUCT);
 
     long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
     System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
@@ -67,7 +67,17 @@ public class BestPriceFinderTest {
   public void synchronously_find_prices_with_discounts_in_a_pipeline_way() {
     long start = System.nanoTime();
 
-    this.bestPriceFinder.findPricesWithDiscounts(ANY_PRODUCT);
+    this.bestPriceFinder.syncFindPricesWithDiscounts(ANY_PRODUCT);
+
+    long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
+    System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
+  }
+
+  @Test
+  public void asynchronously_find_prices() {
+    long start = System.nanoTime();
+
+    this.bestPriceFinder.asyncFindPricesWithDiscounts(ANY_PRODUCT);
 
     long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
     System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
