@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class Shop {
@@ -33,6 +35,17 @@ public class Shop {
           new Shop("BestPrices"),
           new Shop("LetsSaveBig"),
           new Shop("MyFavoriteShop"));
+
+  // using daemon threads does not prevent the termination of the program
+  // no difference for the performance
+  private static final Executor EXECUTOR =
+      Executors.newFixedThreadPool(
+          Math.min(ALL_SHOPS.size(), 100),
+          r -> {
+            Thread t = new Thread(r);
+            t.setDaemon(true);
+            return t;
+          });
 
   public Shop(String name) {
     this.name = name;
@@ -114,6 +127,24 @@ public class Shop {
                         () ->
                             String.format(
                                 "%s price is %.2f", shop.getName(), shop.getPrice(product))))
+            .collect(toList());
+
+    // Wait for the completion of all asynchronous operations
+    return priceFutures.stream().map(CompletableFuture::join).collect(toList());
+  }
+
+  public List<String> findPricesWithStreamsAndAsyncAndExecutor(String product) {
+    // Calculate each price asynchronously with a CompletableFuture
+    List<CompletableFuture<String>> priceFutures =
+        ALL_SHOPS
+            .stream()
+            .map(
+                shop ->
+                    CompletableFuture.supplyAsync(
+                        () ->
+                            String.format(
+                                "%s price is %.2f", shop.getName(), shop.getPrice(product)),
+                        EXECUTOR))
             .collect(toList());
 
     // Wait for the completion of all asynchronous operations

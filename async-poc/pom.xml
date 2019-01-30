@@ -53,6 +53,7 @@
 				<version>2.22.0</version>
 				<configuration>
 					<includes>
+						<include>**/*Test.java</include>
 						<include>**/*Should.java</include>
 						<include>**/*Feature.java</include>
 					</includes>

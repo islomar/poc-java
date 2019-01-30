@@ -87,6 +87,7 @@ public class ShopTest {
 
   @Test
   // Running with parallel streams will only take the time of one calculation
+  // Since we are using more shops than cores (14 shops vs 12 cores)
   public void run_action_in_synchronous_way_with_parallel_streams() {
     Shop shop = new Shop("BestPrice");
     long start = System.nanoTime();
@@ -98,12 +99,26 @@ public class ShopTest {
   }
 
   @Test
-  // Running with parallel streams will only take the time of one calculation
+  // Running with parallel streams will only take the time of two calculations,
+  // Since we are using more shops than cores (14 shops vs 12 cores)
   public void run_action_with_async_streams() {
     Shop shop = new Shop("BestPrice");
     long start = System.nanoTime();
 
     shop.findPricesWithStreamsAndAsync("myPhone");
+
+    long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
+    System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
+  }
+
+  @Test
+  // Running with parallel streams and an Executor with many threads, it will take again the time
+  // of one calculation (there are more threads than shops)
+  public void run_action_with_async_streams_and_executor() {
+    Shop shop = new Shop("BestPrice");
+    long start = System.nanoTime();
+
+    shop.findPricesWithStreamsAndAsyncAndExecutor("myPhone");
 
     long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
     System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
