@@ -1,5 +1,6 @@
 package es.islomar.bestpricefinder;
 
+import static es.islomar.bestpricefinder.Util.delay;
 import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
@@ -55,8 +56,11 @@ public class Shop {
     return this.name;
   }
 
-  public double getPrice(String product) {
-    return calculatePrice(product);
+  public String getPrice(String product) {
+    double price = calculatePrice(product);
+    Discount.Code code =
+        Discount.Code.values()[new Random().nextInt(Discount.Code.values().length)];
+    return this.name + ":" + price + ":" + code;
   }
 
   public void shouldThrowShopException() {
@@ -105,14 +109,14 @@ public class Shop {
   public List<String> findPrices(String product) {
     return ALL_SHOPS
         .stream()
-        .map(shop -> String.format("%s price is %.2f", shop.getName(), shop.getPrice(product)))
+        .map(shop -> String.format("%s price is %s", shop.getName(), shop.getPrice(product)))
         .collect(toList());
   }
 
   public List<String> findPricesWithParallelStreams(String product) {
     return ALL_SHOPS
         .parallelStream()
-        .map(shop -> String.format("%s price is %.2f", shop.getName(), shop.getPrice(product)))
+        .map(shop -> String.format("%s price is %s", shop.getName(), shop.getPrice(product)))
         .collect(toList());
   }
 
@@ -126,7 +130,7 @@ public class Shop {
                     CompletableFuture.supplyAsync(
                         () ->
                             String.format(
-                                "%s price is %.2f", shop.getName(), shop.getPrice(product))))
+                                "%s price is %s", shop.getName(), shop.getPrice(product))))
             .collect(toList());
 
     // Wait for the completion of all asynchronous operations
@@ -142,8 +146,7 @@ public class Shop {
                 shop ->
                     CompletableFuture.supplyAsync(
                         () ->
-                            String.format(
-                                "%s price is %.2f", shop.getName(), shop.getPrice(product)),
+                            String.format("%s price is %s", shop.getName(), shop.getPrice(product)),
                         EXECUTOR))
             .collect(toList());
 
@@ -162,13 +165,5 @@ public class Shop {
     System.out.println("Calculated price for " + product);
     Random random = new Random();
     return random.nextDouble() * product.charAt(0) + product.charAt(1);
-  }
-
-  private static void delay() {
-    try {
-      Thread.sleep(1000L);
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    }
   }
 }
