@@ -38,7 +38,7 @@ public class ShopServiceTest {
     Future<Double> futurePrice = shopService.getPriceAsync("myPhone");
 
     ExecutionException executionException =
-        assertThrows(ExecutionException.class, () -> futurePrice.get());
+        assertThrows(ExecutionException.class, futurePrice::get);
 
     assertThat(executionException.getCause(), instanceOf(ShopException.class));
     assertTrue(futurePrice.isDone());
@@ -52,7 +52,7 @@ public class ShopServiceTest {
     shopService.shouldCancel();
     Future<Double> futurePrice = shopService.getPriceAsync("myPhone");
 
-    assertThrows(CancellationException.class, () -> futurePrice.get());
+    assertThrows(CancellationException.class, futurePrice::get);
 
     assertTrue(futurePrice.isDone());
     assertTrue(futurePrice.isCancelled());
@@ -65,7 +65,7 @@ public class ShopServiceTest {
     Future<Double> futurePrice = shopService.getPriceAsync("myPhone");
 
     ExecutionException executionException =
-        assertThrows(ExecutionException.class, () -> futurePrice.get());
+        assertThrows(ExecutionException.class, futurePrice::get);
 
     assertThat(executionException.getCause(), instanceOf(RuntimeException.class));
     assertTrue(futurePrice.isDone());

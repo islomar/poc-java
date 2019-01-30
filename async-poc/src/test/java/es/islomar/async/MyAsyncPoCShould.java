@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
  */
 public class MyAsyncPoCShould {
 
-  MyCollaborator myCollaborator = mock(MyCollaborator.class);
+  private final MyCollaborator myCollaborator = mock(MyCollaborator.class);
   private MyAsyncPoC myAsyncPoC;
 
   @BeforeEach
@@ -57,7 +57,7 @@ public class MyAsyncPoCShould {
   public void throw_CancellationException_when_cancelling_a_future() {
     Future<String> stringFuture = this.myAsyncPoC.calculateAsyncWithCancellation();
 
-    assertThrows(CancellationException.class, () -> stringFuture.get());
+    assertThrows(CancellationException.class, stringFuture::get);
   }
 
   @Test

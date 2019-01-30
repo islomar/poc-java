@@ -14,8 +14,7 @@ public class ShopService {
 
   public String getPrice(String product, Shop shop) {
     double price = calculatePrice(product);
-    DiscountCode code = DiscountCode.values()[new Random().nextInt(DiscountCode.values().length)];
-    return shop.getName() + ":" + price + ":" + code;
+    return shop.getName() + ":" + price + ":" + shop.getDiscountCode();
   }
 
   public void shouldThrowShopException() {
