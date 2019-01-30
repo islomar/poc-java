@@ -72,6 +72,42 @@ public class ShopTest {
     assertFalse(futurePrice.isCancelled());
   }
 
+  @Test
+  // Running with regular streams will take n times the calculation of one product
+  public void run_action_in_synchronous_way() {
+    Shop shop = new Shop("BestPrice");
+    long start = System.nanoTime();
+
+    shop.findPrices("myPhone");
+
+    long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
+    System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
+  }
+
+  @Test
+  // Running with parallel streams will only take the time of one calculation
+  public void run_action_in_synchronous_way_with_parallel_streams() {
+    Shop shop = new Shop("BestPrice");
+    long start = System.nanoTime();
+
+    shop.findPricesWithParallelStreams("myPhone");
+
+    long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
+    System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
+  }
+
+  @Test
+  // Running with parallel streams will only take the time of one calculation
+  public void run_action_with_async_streams() {
+    Shop shop = new Shop("BestPrice");
+    long start = System.nanoTime();
+
+    shop.findPricesWithStreamsAndAsync("myPhone");
+
+    long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
+    System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
+  }
+
   private void logInvocationTime(long start, String s) {
     long invocationTime = ((System.nanoTime() - start) / 1_000_000);
     System.out.println(s + invocationTime + " msecs");

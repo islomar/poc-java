@@ -1,5 +1,9 @@
 package es.islomar.bestpricefinder;
 
+import static java.util.stream.Collectors.toList;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
@@ -10,9 +14,19 @@ public class Shop {
   private boolean shouldCancel;
   private boolean shouldThrowShopException;
   private boolean shouldThrowRuntimeException;
+  private static final List<Shop> ALL_SHOPS =
+      Arrays.asList(
+          new Shop("BestPrices"),
+          new Shop("LetsSaveBig"),
+          new Shop("MyFavoriteShop"),
+          new Shop("BuyItAll"));
 
   public Shop(String name) {
     this.name = name;
+  }
+
+  private String getName() {
+    return this.name;
   }
 
   public double getPrice(String product) {
@@ -60,6 +74,37 @@ public class Shop {
       futurePrice.cancel(true);
     }
     return futurePrice;
+  }
+
+  public List<String> findPrices(String product) {
+    return ALL_SHOPS
+        .stream()
+        .map(shop -> String.format("%s price is %.2f", shop.getName(), shop.getPrice(product)))
+        .collect(toList());
+  }
+
+  public List<String> findPricesWithParallelStreams(String product) {
+    return ALL_SHOPS
+        .parallelStream()
+        .map(shop -> String.format("%s price is %.2f", shop.getName(), shop.getPrice(product)))
+        .collect(toList());
+  }
+
+  public List<String> findPricesWithStreamsAndAsync(String product) {
+    // Calculate each price asynchronously with a CompletableFuture
+    List<CompletableFuture<String>> priceFutures =
+        ALL_SHOPS
+            .stream()
+            .map(
+                shop ->
+                    CompletableFuture.supplyAsync(
+                        () ->
+                            String.format(
+                                "%s price is %.2f", shop.getName(), shop.getPrice(product))))
+            .collect(toList());
+
+    // Wait for the completion of all asynchronous operations
+    return priceFutures.stream().map(CompletableFuture::join).collect(toList());
   }
 
   private double calculatePrice(String product) {
