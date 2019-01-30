@@ -52,8 +52,9 @@ public class Shop {
               } catch (ShopException ex) {
                 futurePrice.completeExceptionally(ex);
               } catch (Exception ex) {
+                // It makes no sense to manually throw an exception here: completeExceptionally()
+                // does it (ExecutionException)
                 futurePrice.completeExceptionally(ex);
-                throw new ShopException(ex);
               }
             })
         .start();
