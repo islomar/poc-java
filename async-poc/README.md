@@ -29,7 +29,9 @@ available when the computation itself is completed.
 * The `Supplier` interface is a generic functional interface with a single method that has no arguments and returns a value of a parameterized type.
 * Async API: common for I/O systems programming.
 
+
 ## To Do
 * CompletableFuture<Void>
 * CompletableFuture.supplyAsync()
 * Function<Throwable, CompletableFuture<T>>
+* exceptionally()

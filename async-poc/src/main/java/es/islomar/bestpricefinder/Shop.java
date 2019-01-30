@@ -7,13 +7,28 @@ import java.util.concurrent.Future;
 public class Shop {
 
   private final String name;
+  private boolean shouldCancel;
+  private boolean shouldThrowShopException;
+  private boolean shouldThrowRuntimeException;
 
   public Shop(String name) {
     this.name = name;
   }
 
   public double getPrice(String product) {
-    return calcualtePrice(product);
+    return calculatePrice(product);
+  }
+
+  public void shouldThrowShopException() {
+    this.shouldThrowShopException = true;
+  }
+
+  public void shouldThrowRuntimeException() {
+    this.shouldThrowRuntimeException = true;
+  }
+
+  public void shouldCancel() {
+    this.shouldCancel = true;
   }
 
   public Future<Double> getPriceAsync(String product) {
@@ -21,14 +36,31 @@ public class Shop {
     // fork a different thread that will perform the actual price calculation
     new Thread(
             () -> {
-              double price = calcualtePrice(product);
-              futurePrice.complete(price);
+              try {
+                if (this.shouldThrowShopException) {
+                  throw new ShopException("Something bad happened!");
+                }
+                if (this.shouldThrowRuntimeException) {
+                  throw new RuntimeException("Unexpected error!");
+                }
+                if (this.shouldCancel) {
+                  futurePrice.cancel(true);
+                  return;
+                }
+                double price = calculatePrice(product);
+                futurePrice.complete(price);
+              } catch (ShopException ex) {
+                futurePrice.completeExceptionally(ex);
+              } catch (Exception ex) {
+                futurePrice.completeExceptionally(ex);
+                throw new ShopException(ex);
+              }
             })
         .start();
     return futurePrice;
   }
 
-  private double calcualtePrice(String product) {
+  private double calculatePrice(String product) {
     delay();
     Random random = new Random();
     return random.nextDouble() * product.charAt(0) + product.charAt(1);
