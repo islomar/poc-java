@@ -1,10 +1,12 @@
 package es.islomar.bestpricefinder;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class BestPriceFinderTest {
 
+  public static final String ANY_PRODUCT = "myPhone";
   private BestPriceFinder bestPriceFinder;
 
   @BeforeEach
@@ -18,7 +20,7 @@ public class BestPriceFinderTest {
   public void run_action_in_synchronous_way() {
     long start = System.nanoTime();
 
-    this.bestPriceFinder.findPrices("myPhone");
+    this.bestPriceFinder.findPrices(ANY_PRODUCT);
 
     long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
     System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
@@ -30,7 +32,7 @@ public class BestPriceFinderTest {
   public void run_action_in_synchronous_way_with_parallel_streams() {
     long start = System.nanoTime();
 
-    this.bestPriceFinder.findPricesWithParallelStreams("myPhone");
+    this.bestPriceFinder.findPricesWithParallelStreams(ANY_PRODUCT);
 
     long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
     System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
@@ -42,7 +44,7 @@ public class BestPriceFinderTest {
   public void run_action_with_async_streams() {
     long start = System.nanoTime();
 
-    this.bestPriceFinder.findPricesWithStreamsAndAsync("myPhone");
+    this.bestPriceFinder.findPricesWithStreamsAndAsync(ANY_PRODUCT);
 
     long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
     System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
@@ -54,9 +56,15 @@ public class BestPriceFinderTest {
   public void run_action_with_async_streams_and_executor() {
     long start = System.nanoTime();
 
-    this.bestPriceFinder.findPricesWithStreamsAndAsyncAndExecutor("myPhone");
+    this.bestPriceFinder.findPricesWithStreamsAndAsyncAndExecutor(ANY_PRODUCT);
 
     long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
     System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
+  }
+
+  @Test
+  @Disabled
+  public void when_xxx_then_xxx() {
+    this.bestPriceFinder.findPricesWithDiscounts(ANY_PRODUCT);
   }
 }

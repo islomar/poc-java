@@ -1,6 +1,5 @@
 package es.islomar.bestpricefinder;
 
-import static es.islomar.bestpricefinder.DiscountService.Code;
 import static es.islomar.bestpricefinder.Util.delay;
 
 import java.util.Random;
@@ -24,7 +23,7 @@ public class ShopService {
 
   public String getPrice(String product) {
     double price = calculatePrice(product);
-    Code code = Code.values()[new Random().nextInt(Code.values().length)];
+    DiscountCode code = DiscountCode.values()[new Random().nextInt(DiscountCode.values().length)];
     return this.shopName + ":" + price + ":" + code;
   }
 
