@@ -42,7 +42,7 @@ public class BestPriceFinder {
             return t;
           });
   private final ShopService shopService;
-  private ExchangeService exchangeService;
+  private final ExchangeService exchangeService;
 
   public BestPriceFinder() {
     this.shopService = new ShopService();
@@ -125,24 +125,12 @@ public class BestPriceFinder {
    */
   public List<String> asyncFindPricesWithDiscounts(String product) {
     List<CompletableFuture<String>> priceFutures =
-        ALL_SHOPS
-            .stream()
-            .map(
-                shop ->
-                    CompletableFuture.supplyAsync(
-                        () -> this.shopService.getPriceWithDiscount(product, shop), EXECUTOR))
-            .map(future -> future.thenApply(Quote::parse))
-            .map(
-                future ->
-                    future.thenCompose(
-                        quote ->
-                            CompletableFuture.supplyAsync(
-                                () -> DiscountService.applyDiscount(quote), EXECUTOR)))
-            .collect(toList());
+        this.findPricesWithDiscountStream(product).collect(toList());
 
     return priceFutures.stream().map(CompletableFuture::join).collect(toList());
   }
 
+  // Combine two independent tasks
   public List<Double> futurePriceInUSD(String product) {
     Stream<CompletableFuture<Double>> futurePricesInUSD =
         ALL_SHOPS
@@ -158,5 +146,33 @@ public class BestPriceFinder {
                             (price, rate) -> price * rate));
 
     return futurePricesInUSD.map(CompletableFuture::join).collect(toList());
+  }
+
+  // Register an action to each CompletableFuture; this action consumes the value of the
+  // CompletableFuture as soon as it completes
+  public void asyncFindPricesAsap(String product) {
+    CompletableFuture[] futures =
+        findPricesWithDiscountStream(product)
+            .map(
+                f -> f.thenAccept(System.out::println)) // it prints the results as soon as they are
+            // ready
+            .toArray(size -> new CompletableFuture[size]);
+    CompletableFuture.allOf(futures).join(); // waits for the slowest action to complete
+  }
+
+  private Stream<CompletableFuture<String>> findPricesWithDiscountStream(String product) {
+    return ALL_SHOPS
+        .stream()
+        .map(
+            shop ->
+                CompletableFuture.supplyAsync(
+                    () -> this.shopService.getPriceWithDiscount(product, shop), EXECUTOR))
+        .map(future -> future.thenApply(Quote::parse))
+        .map(
+            future ->
+                future.thenCompose(
+                    quote ->
+                        CompletableFuture.supplyAsync(
+                            () -> DiscountService.applyDiscount(quote), EXECUTOR)));
   }
 }

@@ -92,4 +92,14 @@ public class BestPriceFinderTest {
     long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
     System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
   }
+
+  @Test
+  public void process_found_prices_asap_and_wait_for_all_of_them_at_the_end() {
+    long start = System.nanoTime();
+
+    this.bestPriceFinder.asyncFindPricesAsap(ANY_PRODUCT);
+
+    long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
+    System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
+  }
 }

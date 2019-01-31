@@ -39,6 +39,8 @@ available when the computation itself is completed.
      - `join()` to wait for all the async tasks to complete.
      - `thenCombine()`: to combine two independent async calculations. It also exists a 
      `thenCombineAsync()` version.
+     - `thenApply()`: register an action to each CompletableFuture; this action consumes the 
+     value of the CompletableFuture as soon as it completes.
 * `CompletableStage
     - defines the contract for an asynchronous computation step that can be combined with other steps.
 * Static methods `runAsync()` and `supplyAsync()` allow us to create a CompletableFuture instance
