@@ -129,6 +129,15 @@ public class MyAsyncPoCShould {
     future.get();
   }
 
+  @Test
+  // thenAcceptBoth(): When you want to do something with two Futures‘ results, but don’t need to
+  // pass any resulting value down a Future chain.
+  public void example_with_thenAcceptBoth() {
+    CompletableFuture.supplyAsync(() -> "Hello")
+        .thenAcceptBoth(
+            CompletableFuture.supplyAsync(() -> " World"), (s1, s2) -> System.out.println(s1 + s2));
+  }
+
   private void doSomethingElseWhileTheAsyncOperationIsProgressing() {
     System.out.println("We finished!!");
   }
