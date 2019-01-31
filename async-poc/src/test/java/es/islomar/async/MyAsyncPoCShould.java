@@ -1,5 +1,6 @@
 package es.islomar.async;
 
+import static es.islomar.bestpricefinder.Util.delay;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,11 +12,13 @@ import static org.mockito.Mockito.verify;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import org.hamcrest.core.IsInstanceOf;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -163,6 +166,35 @@ public class MyAsyncPoCShould {
     completableFuture.completeExceptionally(new RuntimeException("Calculation failed!"));
 
     assertThrows(ExecutionException.class, () -> completableFuture.get()); // ExecutionException
+  }
+
+  @Test
+  public void example_with_defaultExecutor() {
+    Executor executor = new CompletableFuture().defaultExecutor();
+
+    System.out.println("Default executor: " + executor.toString());
+    assertThat(executor, IsInstanceOf.instanceOf(Executor.class));
+  }
+
+  @Test
+  public void example_with_orTimeout() {
+    CompletableFuture<Void> future = CompletableFuture.supplyAsync(() -> this.slowComputation());
+
+    ExecutionException executionException =
+        assertThrows(
+            ExecutionException.class, () -> future.orTimeout(10, TimeUnit.MILLISECONDS).get());
+
+    assertThat(executionException.getCause(), IsInstanceOf.instanceOf(TimeoutException.class));
+  }
+
+  @Test
+  public void example_with_failedFuture() {
+    // TODO
+  }
+
+  private Void slowComputation() {
+    delay(false);
+    return null;
   }
 
   private void doSomethingElseWhileTheAsyncOperationIsProgressing() {
