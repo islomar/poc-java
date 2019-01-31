@@ -2,15 +2,25 @@ package es.islomar.bestpricefinder;
 
 import static es.islomar.bestpricefinder.Util.delay;
 
+import es.islomar.bestpricefinder.model.Shop;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 public class ShopService {
 
+  private final boolean isRandomDelay;
   private boolean shouldCancel;
   private boolean shouldThrowShopException;
   private boolean shouldThrowRuntimeException;
+
+  public ShopService() {
+    this(false);
+  }
+
+  public ShopService(boolean isRandomDelay) {
+    this.isRandomDelay = isRandomDelay;
+  }
 
   public String getPriceWithDiscount(String product, Shop shop) {
     double price = calculatePrice(product);
@@ -71,7 +81,7 @@ public class ShopService {
     if (this.shouldThrowRuntimeException) {
       throw new RuntimeException("Unexpected error!");
     }
-    delay();
+    delay(this.isRandomDelay);
     System.out.println("Calculated price for " + product);
     Random random = new Random();
     return random.nextDouble() * product.charAt(0) + product.charAt(1);

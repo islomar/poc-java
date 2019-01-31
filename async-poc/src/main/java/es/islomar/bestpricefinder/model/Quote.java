@@ -1,4 +1,4 @@
-package es.islomar.bestpricefinder;
+package es.islomar.bestpricefinder.model;
 
 public class Quote {
 

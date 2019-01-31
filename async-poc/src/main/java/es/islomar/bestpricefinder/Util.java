@@ -10,7 +10,15 @@ public class Util {
   private static final DecimalFormat formatter =
       new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.US));
 
-  public static void delay() {
+  public static void delay(boolean isRandomDelay) {
+    if (isRandomDelay) {
+      randomDelay();
+    } else {
+      fixedDelay();
+    }
+  }
+
+  private static void fixedDelay() {
     try {
       Thread.sleep(1000L);
     } catch (InterruptedException e) {
@@ -18,7 +26,7 @@ public class Util {
     }
   }
 
-  public static void randomDelay() {
+  private static void randomDelay() {
     int delay = 500 + new Random().nextInt(200);
     try {
       Thread.sleep(delay);

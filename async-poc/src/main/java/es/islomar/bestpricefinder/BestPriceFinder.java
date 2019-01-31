@@ -2,6 +2,9 @@ package es.islomar.bestpricefinder;
 
 import static java.util.stream.Collectors.toList;
 
+import es.islomar.bestpricefinder.model.Money;
+import es.islomar.bestpricefinder.model.Quote;
+import es.islomar.bestpricefinder.model.Shop;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -42,16 +45,15 @@ public class BestPriceFinder {
             return t;
           });
   private final ShopService shopService;
-  private final ExchangeService exchangeService;
+  private final boolean isRandomDelay;
 
-  public BestPriceFinder() {
-    this.shopService = new ShopService();
-    this.exchangeService = new ExchangeService();
+  public BestPriceFinder(boolean isRandomDelay) {
+    this.shopService = new ShopService(isRandomDelay);
+    this.isRandomDelay = isRandomDelay;
   }
 
   public List<String> findPricesSequential(String product) {
-    return ALL_SHOPS
-        .stream()
+    return ALL_SHOPS.stream()
         .map(
             shop ->
                 String.format(
@@ -74,8 +76,7 @@ public class BestPriceFinder {
   public List<String> findPricesWithStreamsAndAsync(String product) {
     // Calculate each price asynchronously with a CompletableFuture
     List<CompletableFuture<String>> priceFutures =
-        ALL_SHOPS
-            .stream()
+        ALL_SHOPS.stream()
             .map(
                 shop ->
                     CompletableFuture.supplyAsync(
@@ -93,8 +94,7 @@ public class BestPriceFinder {
   public List<String> findPricesWithStreamsAndAsyncAndExecutor(String product) {
     // Calculate each price asynchronously with a CompletableFuture
     List<CompletableFuture<String>> priceFutures =
-        ALL_SHOPS
-            .stream()
+        ALL_SHOPS.stream()
             .map(
                 shop ->
                     CompletableFuture.supplyAsync(
@@ -111,8 +111,7 @@ public class BestPriceFinder {
   }
 
   public List<String> syncFindPricesWithDiscounts(String product) {
-    return ALL_SHOPS
-        .stream()
+    return ALL_SHOPS.stream()
         .map(shop -> this.shopService.getPriceWithDiscount(product, shop))
         .map(Quote::parse)
         .map(DiscountService::applyDiscount)
@@ -133,16 +132,15 @@ public class BestPriceFinder {
   // Combine two independent tasks
   public List<Double> futurePriceInUSD(String product) {
     Stream<CompletableFuture<Double>> futurePricesInUSD =
-        ALL_SHOPS
-            .stream()
+        ALL_SHOPS.stream()
             .map(
                 shop ->
                     CompletableFuture.supplyAsync(() -> this.shopService.getPrice(product))
                         .thenCombine(
                             CompletableFuture.supplyAsync(
                                 () ->
-                                    this.exchangeService.getRate(
-                                        ExchangeService.Money.EUR, ExchangeService.Money.USD)),
+                                    ExchangeService.getRate(
+                                        Money.EUR, Money.USD, this.isRandomDelay)),
                             (price, rate) -> price * rate));
 
     return futurePricesInUSD.map(CompletableFuture::join).collect(toList());
@@ -153,16 +151,33 @@ public class BestPriceFinder {
   public void asyncFindPricesAsap(String product) {
     CompletableFuture[] futures =
         findPricesWithDiscountStream(product)
-            .map(
-                f -> f.thenAccept(System.out::println)) // it prints the results as soon as they are
-            // ready
+            // it prints the results as soon as they are ready
+            .map(f -> f.thenAccept(System.out::println))
             .toArray(size -> new CompletableFuture[size]);
     CompletableFuture.allOf(futures).join(); // waits for the slowest action to complete
   }
 
+  public void asyncFindPricesAndPrintThemIncrementally(String product) {
+    long start = System.nanoTime();
+    CompletableFuture[] futures =
+        findPricesWithDiscountStream(product)
+            .map(
+                f ->
+                    f.thenAccept(
+                        s ->
+                            System.out.println(
+                                s
+                                    + " (done in "
+                                    + ((System.nanoTime() - start) / 1_000_000)
+                                    + " msecs)")))
+            .toArray(size -> new CompletableFuture[size]);
+    CompletableFuture.allOf(futures).join();
+    System.out.println(
+        "All shops have now responded in " + ((System.nanoTime() - start) / 1_000_000) + " msecs");
+  }
+
   private Stream<CompletableFuture<String>> findPricesWithDiscountStream(String product) {
-    return ALL_SHOPS
-        .stream()
+    return ALL_SHOPS.stream()
         .map(
             shop ->
                 CompletableFuture.supplyAsync(

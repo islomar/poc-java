@@ -1,4 +1,4 @@
-package es.islomar.bestpricefinder;
+package es.islomar.bestpricefinder.model;
 
 public enum DiscountCode {
   NONE(0),

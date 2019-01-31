@@ -5,12 +5,12 @@ import org.junit.jupiter.api.Test;
 
 public class BestPriceFinderTest {
 
-  public static final String ANY_PRODUCT = "myPhone";
+  private static final String ANY_PRODUCT = "myPhone";
   private BestPriceFinder bestPriceFinder;
 
   @BeforeEach
   public void setUp() {
-    this.bestPriceFinder = new BestPriceFinder();
+    this.bestPriceFinder = new BestPriceFinder(false);
   }
 
   @Test
@@ -94,10 +94,23 @@ public class BestPriceFinderTest {
   }
 
   @Test
+  // All prices are written and shown at the same time
   public void process_found_prices_asap_and_wait_for_all_of_them_at_the_end() {
     long start = System.nanoTime();
 
     this.bestPriceFinder.asyncFindPricesAsap(ANY_PRODUCT);
+
+    long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
+    System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));
+  }
+
+  @Test
+  // Prices are printed incrementally as soon as the discounted price for a given shop is available
+  public void process_found_prices_asap_and_return_them_as_soon_as_each_is_ready() {
+    this.bestPriceFinder = new BestPriceFinder(true);
+    long start = System.nanoTime();
+
+    this.bestPriceFinder.asyncFindPricesAndPrintThemIncrementally(ANY_PRODUCT);
 
     long totalTimeElapsed = ((System.nanoTime() - start) / 1_000_000);
     System.out.println(String.format("Time elapsed: %s msecs", totalTimeElapsed));

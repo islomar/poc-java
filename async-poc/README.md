@@ -41,6 +41,8 @@ available when the computation itself is completed.
      `thenCombineAsync()` version.
      - `thenApply()`: register an action to each CompletableFuture; this action consumes the 
      value of the CompletableFuture as soon as it completes.
+     - `anyOf()`: wait for the completion of only one of the CompletableFutures. E.g. you ask two different services for 
+     the same thing, and you just keep the first one that answers.
 * `CompletableStage
     - defines the contract for an asynchronous computation step that can be combined with other steps.
 * Static methods `runAsync()` and `supplyAsync()` allow us to create a CompletableFuture instance
