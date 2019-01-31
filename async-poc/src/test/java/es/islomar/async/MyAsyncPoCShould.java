@@ -178,7 +178,7 @@ public class MyAsyncPoCShould {
 
   @Test
   public void example_with_orTimeout() {
-    CompletableFuture<Void> future = CompletableFuture.supplyAsync(() -> this.slowComputation());
+    CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> this.slowComputation());
 
     ExecutionException executionException =
         assertThrows(
@@ -188,13 +188,23 @@ public class MyAsyncPoCShould {
   }
 
   @Test
+  public void example_with_completeOnTimeout() throws ExecutionException, InterruptedException {
+    CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> this.slowComputation());
+
+    String response =
+        future.completeOnTimeout("Default timeout value", 10, TimeUnit.MILLISECONDS).get();
+
+    assertThat(response, is("Default timeout value"));
+  }
+
+  @Test
   public void example_with_failedFuture() {
     // TODO
   }
 
-  private Void slowComputation() {
+  private String slowComputation() {
     delay(false);
-    return null;
+    return "The right response";
   }
 
   private void doSomethingElseWhileTheAsyncOperationIsProgressing() {
