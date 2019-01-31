@@ -40,7 +40,8 @@ available when the computation itself is completed.
      - `thenCombine()`: to combine two independent async calculations. It also exists a 
      `thenCombineAsync()` version.
      - `thenApply()`: register an action to each CompletableFuture; this action consumes the 
-     value of the CompletableFuture as soon as it completes.
+     value of the CompletableFuture as soon as it completes and returns CompletableFuture<U>
+     - `thenAccept()` is like thenApply(), but it returns a CompletableFuture<Void>
      - `anyOf()`: wait for the completion of only one of the CompletableFutures. E.g. you ask two different services for 
      the same thing, and you just keep the first one that answers.
 * `CompletableStage
