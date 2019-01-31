@@ -4,7 +4,9 @@ import static es.islomar.bestpricefinder.Util.delay;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -199,7 +201,11 @@ public class MyAsyncPoCShould {
 
   @Test
   public void example_with_failedFuture() {
-    // TODO
+    CompletableFuture<Object> future = CompletableFuture.failedFuture(new RuntimeException());
+
+    assertTrue(future.isDone());
+    assertTrue(future.isCompletedExceptionally());
+    assertFalse(future.isCancelled());
   }
 
   private String slowComputation() {
