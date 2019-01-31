@@ -208,6 +208,34 @@ public class MyAsyncPoCShould {
     assertFalse(future.isCancelled());
   }
 
+  @Test
+  public void example_with_exceptionally() throws ExecutionException, InterruptedException {
+    Integer age = -1;
+
+    CompletableFuture<String> maturityFuture =
+        CompletableFuture.supplyAsync(
+                () -> {
+                  if (age < 0) {
+                    throw new IllegalArgumentException("Age can not be negative");
+                  }
+                  if (age > 18) {
+                    return "Adult";
+                  } else {
+                    return "Child";
+                  }
+                })
+            .exceptionally(
+                ex -> {
+                  System.out.println("Oops! We have an exception - " + ex.getMessage());
+                  return "Unknown!";
+                });
+
+    assertThat(maturityFuture.get(), is("Unknown!"));
+    assertTrue(maturityFuture.isDone());
+    assertFalse(maturityFuture.isCompletedExceptionally());
+    assertFalse(maturityFuture.isCancelled());
+  }
+
   private String slowComputation() {
     delay(false);
     return "The right response";

@@ -48,6 +48,7 @@ available when the computation itself is completed.
      - `thenAccept()` is like thenApply(), but it returns a CompletableFuture<Void>
      - `anyOf()`: wait for the completion of only one of the CompletableFutures. E.g. you ask two different services for 
      the same thing, and you just keep the first one that answers.
+     - The `exceptionally()` callback gives you a chance to recover from errors generated from the original Future. You can log the exception here and return a default value.
 * `CompletableStage
     - defines the contract for an asynchronous computation step that can be combined with other steps.
 * Static methods `runAsync()` and `supplyAsync()` allow us to create a CompletableFuture instance
