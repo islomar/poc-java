@@ -36,13 +36,14 @@ available when the computation itself is completed.
      Thread than the previous task.
      - `thenCompseAsync()`: it executes the task in a different Thread than the previous task, it
       submits the task to the thread pool (each task can be handled by a different thread).
-     - `join()` to wait for all the async tasks to complete.
+     - `join()` to wait for all the async tasks to complete. The CompletableFuture.join() method is similar to the get method, but it throws an unchecked exception in case the Future does not complete normally. This makes it possible to use it as a method reference in the Stream.map() method.
      - `thenCombine()`: to combine two independent async calculations. It also exists a 
      `thenCombineAsync()` version.
      - `thenApply()`: register an action to each CompletableFuture; this action consumes the 
      value of the CompletableFuture as soon as it completes and returns CompletableFuture<U>
      - `thenApply()` takes any function and returns whatever value. The difference with 
      `thenCompose()` is that the latter is a function that returns a CompletableFuture<U> 
+     - If the idea is to chain CompletableFuture methods then it’s better to use thenCompose().
      - `thenAccept()` is like thenApply(), but it returns a CompletableFuture<Void>
      - `anyOf()`: wait for the completion of only one of the CompletableFutures. E.g. you ask two different services for 
      the same thing, and you just keep the first one that answers.

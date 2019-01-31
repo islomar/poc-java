@@ -138,6 +138,33 @@ public class MyAsyncPoCShould {
             CompletableFuture.supplyAsync(() -> " World"), (s1, s2) -> System.out.println(s1 + s2));
   }
 
+  @Test
+  public void example_for_handling_exceptions() throws ExecutionException, InterruptedException {
+    String name = null;
+
+    // handle() provides a default value for the name in case an exception happened
+    CompletableFuture<String> completableFuture =
+        CompletableFuture.supplyAsync(
+                () -> {
+                  if (name == null) {
+                    throw new RuntimeException("Computation error!");
+                  }
+                  return "Hello, " + name;
+                })
+            .handle((s, t) -> s != null ? s : "Hello, Stranger!");
+
+    assertEquals("Hello, Stranger!", completableFuture.get());
+  }
+
+  @Test
+  public void example_with_completeExceptionally() {
+    CompletableFuture<String> completableFuture = new CompletableFuture<>();
+
+    completableFuture.completeExceptionally(new RuntimeException("Calculation failed!"));
+
+    assertThrows(ExecutionException.class, () -> completableFuture.get()); // ExecutionException
+  }
+
   private void doSomethingElseWhileTheAsyncOperationIsProgressing() {
     System.out.println("We finished!!");
   }
