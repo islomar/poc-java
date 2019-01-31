@@ -114,7 +114,7 @@ public class BestPriceFinder {
     return ALL_SHOPS.stream()
         .map(shop -> this.shopService.getPriceWithDiscount(product, shop))
         .map(Quote::parse)
-        .map(DiscountService::applyDiscount)
+        .map(quote -> DiscountService.applyDiscount(quote, this.isRandomDelay))
         .collect(toList());
   }
 
@@ -188,6 +188,6 @@ public class BestPriceFinder {
                 future.thenCompose(
                     quote ->
                         CompletableFuture.supplyAsync(
-                            () -> DiscountService.applyDiscount(quote), EXECUTOR)));
+                            () -> DiscountService.applyDiscount(quote, false), EXECUTOR)));
   }
 }

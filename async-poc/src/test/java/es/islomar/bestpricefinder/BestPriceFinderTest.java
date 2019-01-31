@@ -106,6 +106,7 @@ public class BestPriceFinderTest {
 
   @Test
   // Prices are printed incrementally as soon as the discounted price for a given shop is available
+  // The total time elapsed is lower than waiting for all of them (even being async)
   public void process_found_prices_asap_and_return_them_as_soon_as_each_is_ready() {
     this.bestPriceFinder = new BestPriceFinder(true);
     long start = System.nanoTime();

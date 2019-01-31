@@ -8,10 +8,10 @@ import es.islomar.bestpricefinder.model.Quote;
 
 public class DiscountService {
 
-  public static String applyDiscount(Quote quote) {
+  public static String applyDiscount(Quote quote, boolean isRandomDelay) {
     return quote.getShopName()
         + " price is "
-        + apply(quote.getPrice(), quote.getDiscountCode(), false);
+        + apply(quote.getPrice(), quote.getDiscountCode(), isRandomDelay);
   }
 
   private static double apply(double price, DiscountCode code, boolean isRandomDelay) {
